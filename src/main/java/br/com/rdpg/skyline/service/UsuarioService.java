@@ -22,4 +22,16 @@ public class UsuarioService {
 		return usuario.get();
 	}
 
+	public Usuario buscar(String cpf) {
+		Optional<Usuario> usuario = usuarioRepository.findByCpf(cpf);
+		return usuario.get();
+	}
+
+	public Boolean existeUsuario(String cpf) {
+		Optional<Usuario> usuario = usuarioRepository.findByCpf(cpf);
+		if (usuario.isPresent())
+			return true;
+		return false;
+	}
+
 }
