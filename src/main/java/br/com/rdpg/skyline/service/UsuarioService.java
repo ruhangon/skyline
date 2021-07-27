@@ -29,9 +29,7 @@ public class UsuarioService {
 
 	public Boolean existeUsuario(String cpf) {
 		Optional<Usuario> usuario = usuarioRepository.findByCpf(cpf);
-		if (usuario.isPresent())
-			return true;
-		return false;
+		return usuario.isPresent();
 	}
 
 }

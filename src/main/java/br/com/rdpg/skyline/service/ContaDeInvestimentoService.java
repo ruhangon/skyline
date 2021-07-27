@@ -19,13 +19,13 @@ public class ContaDeInvestimentoService {
 	private UsuarioService usuarioService;
 
 	public ContaDeInvestimento inserir(String cpfUsuario) {
-		BigDecimal saldoBrl = new BigDecimal("0.0");
+		BigDecimal saldoBrl = BigDecimal.ZERO;
 		Usuario usuario = usuarioService.buscar(cpfUsuario);
 		ContaDeInvestimento contaDeInvestimento = new ContaDeInvestimento(saldoBrl, usuario);
 		return contaDeInvestimentoRepository.save(contaDeInvestimento);
 	}
 
-	public ContaDeInvestimento atualiza(Long id, BigDecimal valorBrl) {
+	public ContaDeInvestimento atualizar(Long id, BigDecimal valorBrl) {
 		ContaDeInvestimento contaDeInvestimento = contaDeInvestimentoRepository.getOne(id);
 		BigDecimal saldoNovo = contaDeInvestimento.getSaldoBrl().add(valorBrl);
 		contaDeInvestimento.setSaldoBrl(saldoNovo);
@@ -34,9 +34,7 @@ public class ContaDeInvestimentoService {
 
 	public Boolean existeConta(Long id) {
 		Optional<ContaDeInvestimento> optional = contaDeInvestimentoRepository.findById(id);
-		if (optional.isPresent())
-			return true;
-		return false;
+		return optional.isPresent();
 	}
 
 	public ContaDeInvestimento buscar(Long id) {
@@ -45,9 +43,18 @@ public class ContaDeInvestimentoService {
 	}
 
 	public Boolean ePossivelAbrir(String cpfUsuario) {
-		if (usuarioService.existeUsuario(cpfUsuario))
-			return true;
-		return false;
+		return usuarioService.existeUsuario(cpfUsuario);
+	}
+
+	public BigDecimal pegarSaldoBrlAtual(Long id) {
+		ContaDeInvestimento contaDeInvestimento = buscar(id);
+		return contaDeInvestimento.getSaldoBrl();
+	}
+
+	public void atualizarSaldoBrl(Long id, BigDecimal valorBrl) {
+		ContaDeInvestimento contaDeInvestimento = contaDeInvestimentoRepository.getOne(id);
+		BigDecimal novoSaldoBrl = contaDeInvestimento.getSaldoBrl().subtract(valorBrl);
+		contaDeInvestimento.setSaldoBrl(novoSaldoBrl);
 	}
 
 }

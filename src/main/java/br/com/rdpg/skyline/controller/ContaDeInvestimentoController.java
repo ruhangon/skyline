@@ -38,9 +38,8 @@ public class ContaDeInvestimentoController {
 			ContaDeInvestimento contaDeInvestimento = contaDeInvestimentoService.inserir(cpfUsuario);
 			URI uri = uriBuilder.path("/contas/{id}").buildAndExpand(contaDeInvestimento.getId()).toUri();
 			return ResponseEntity.created(uri).body(new ContaDeInvestimentoDto(contaDeInvestimento));
-		} else {
-			return ResponseEntity.notFound().build();
 		}
+		return ResponseEntity.notFound().build();
 	}
 
 	@PutMapping("/{id}")
@@ -49,7 +48,7 @@ public class ContaDeInvestimentoController {
 			@RequestBody @Valid AtualizacaoContaDeInvestimentoForm form) {
 		if (contaDeInvestimentoService.existeConta(id)) {
 			BigDecimal valorBrl = form.getValorBrl();
-			ContaDeInvestimento contaDeInvestimento = contaDeInvestimentoService.atualiza(id, valorBrl);
+			ContaDeInvestimento contaDeInvestimento = contaDeInvestimentoService.atualizar(id, valorBrl);
 			return ResponseEntity.ok(new ContaDeInvestimentoDto(contaDeInvestimento));
 		}
 		return ResponseEntity.notFound().build();
