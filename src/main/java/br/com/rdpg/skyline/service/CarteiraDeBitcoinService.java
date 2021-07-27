@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import br.com.rdpg.skyline.btc.Bitcoin;
+import br.com.rdpg.skyline.controller.dto.InvestimentoDto;
 import br.com.rdpg.skyline.model.CarteiraDeBitcoin;
 import br.com.rdpg.skyline.model.ContaDeInvestimento;
 import br.com.rdpg.skyline.repository.CarteiraDeBitcoinRepository;
@@ -68,6 +69,21 @@ public class CarteiraDeBitcoinService {
 			System.out.println(e.getMessage());
 		}
 		return BigDecimal.ZERO;
+	}
+
+	public InvestimentoDto preencherInformacoesDeInvestimento(Long id) {
+		BigDecimal saldoBrl = contaDeInvestimentoService.pegarSaldoBrlAtual(id);
+		CarteiraDeBitcoin carteiraDeBitcoin = buscar(id);
+		BigDecimal saldoBtc = carteiraDeBitcoin.getSaldoBtc();
+		BigDecimal totalDeBrlInvestido = carteiraDeBitcoin.getTotalDeBrlInvestido();
+		BigDecimal precoDoBitcoinAgora = pegarPrecoDoBitcoinEmBrl();
+		BigDecimal lucroTotal = calculaLucroAteOMomento(carteiraDeBitcoin, precoDoBitcoinAgora);
+		return new InvestimentoDto(id, saldoBrl, saldoBtc, totalDeBrlInvestido, lucroTotal, precoDoBitcoinAgora);
+	}
+
+	public BigDecimal calculaLucroAteOMomento(CarteiraDeBitcoin carteiraDeBitcoin, BigDecimal precoDoBitcoinAgora) {
+		BigDecimal btcParaBrl = carteiraDeBitcoin.getSaldoBtc().multiply(precoDoBitcoinAgora);
+		return btcParaBrl.subtract(carteiraDeBitcoin.getTotalDeBrlInvestido());
 	}
 
 }
