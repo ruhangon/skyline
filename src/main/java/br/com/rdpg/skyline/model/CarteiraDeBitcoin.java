@@ -1,7 +1,10 @@
 package br.com.rdpg.skyline.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,7 +19,9 @@ public class CarteiraDeBitcoin {
 	private Long id;
 	private BigDecimal saldoBtc;
 	private BigDecimal totalDeBrlInvestido;
-	// List<Transacao> transacoes = new ArrayList<>();
+
+	@ElementCollection
+	private List<Transacao> transacoes = new ArrayList<>();
 
 	@MapsId
 	@OneToOne
@@ -56,13 +61,13 @@ public class CarteiraDeBitcoin {
 		this.totalDeBrlInvestido = totalDeBrlInvestido;
 	}
 
-	// public List<Transacao> getTransacoes() {
-	// return transacoes;
-	// }
+	public List<Transacao> getTransacoes() {
+		return transacoes;
+	}
 
-	// public void setTransacoes(List<Transacao> transacoes) {
-	// this.transacoes = transacoes;
-	// }
+	public void setTransacoes(List<Transacao> transacoes) {
+		this.transacoes = transacoes;
+	}
 
 	public ContaDeInvestimento getContaDeInvestimento() {
 		return contaDeInvestimento;

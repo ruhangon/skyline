@@ -1,6 +1,8 @@
 package br.com.rdpg.skyline.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import br.com.rdpg.skyline.btc.Bitcoin;
 import br.com.rdpg.skyline.controller.dto.InvestimentoDto;
 import br.com.rdpg.skyline.model.CarteiraDeBitcoin;
 import br.com.rdpg.skyline.model.ContaDeInvestimento;
+import br.com.rdpg.skyline.model.Transacao;
 import br.com.rdpg.skyline.repository.CarteiraDeBitcoinRepository;
 
 @Service
@@ -56,8 +59,8 @@ public class CarteiraDeBitcoinService {
 		carteiraDeBitcoin.setSaldoBtc(novoSaldoBtc);
 		BigDecimal novoTotalDeBrlInvestido = carteiraDeBitcoin.getTotalDeBrlInvestido().add(compraDeBtcEmReais);
 		carteiraDeBitcoin.setTotalDeBrlInvestido(novoTotalDeBrlInvestido);
-		// Transacao transacao = new Transacao(compraDeBtcEmReais, valorBtc);
-		// carteiraDeBitcoin.getTransacoes().add(transacao);
+		Transacao transacao = new Transacao(compraDeBtcEmReais, valorBtc);
+		carteiraDeBitcoin.getTransacoes().add(transacao);
 		contaDeInvestimentoService.atualizarSaldoBrl(id, compraDeBtcEmReais);
 		return carteiraDeBitcoin;
 	}
@@ -78,12 +81,27 @@ public class CarteiraDeBitcoinService {
 		BigDecimal totalDeBrlInvestido = carteiraDeBitcoin.getTotalDeBrlInvestido();
 		BigDecimal precoDoBitcoinAgora = pegarPrecoDoBitcoinEmBrl();
 		BigDecimal lucroTotal = calculaLucroAteOMomento(carteiraDeBitcoin, precoDoBitcoinAgora);
-		return new InvestimentoDto(id, saldoBrl, saldoBtc, totalDeBrlInvestido, lucroTotal, precoDoBitcoinAgora);
+		List<Transacao> ultimasTransacoes = pegarUltimasCincoTransacoes(carteiraDeBitcoin);
+		return new InvestimentoDto(id, saldoBrl, saldoBtc, totalDeBrlInvestido, lucroTotal, precoDoBitcoinAgora,
+				ultimasTransacoes);
 	}
 
 	public BigDecimal calculaLucroAteOMomento(CarteiraDeBitcoin carteiraDeBitcoin, BigDecimal precoDoBitcoinAgora) {
 		BigDecimal btcParaBrl = carteiraDeBitcoin.getSaldoBtc().multiply(precoDoBitcoinAgora);
 		return btcParaBrl.subtract(carteiraDeBitcoin.getTotalDeBrlInvestido());
+	}
+
+	public List<Transacao> pegarUltimasCincoTransacoes(CarteiraDeBitcoin carteiraDeBitcoin) {
+		if (carteiraDeBitcoin.getTransacoes().size() > 5) {
+			List<Transacao> ultimasTransacoes = new ArrayList<>();
+			int inicio = carteiraDeBitcoin.getTransacoes().size() - 5;
+			int fim = carteiraDeBitcoin.getTransacoes().size();
+			for (int i = inicio; i < fim; i++) {
+				ultimasTransacoes.add(carteiraDeBitcoin.getTransacoes().get(i));
+			}
+			return ultimasTransacoes;
+		}
+		return carteiraDeBitcoin.getTransacoes();
 	}
 
 }

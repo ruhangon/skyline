@@ -9,7 +9,7 @@ import javax.validation.constraints.Positive;
 public class CarteiraDeBitcoinForm {
 	@NotNull(message = "campo valor não pode ser nulo")
 	@Positive(message = "valor precisa ser positivo")
-	@Digits(integer = 10000000, fraction = 1, message = "o número máximo aceito de casas decimais é {fraction}")
+	@Digits(integer = 10000000, fraction = 1, message = "o número máximo aceito de casas decimais é 1")
 	private BigDecimal valorBtc;
 
 	public BigDecimal getValorBtc() {
